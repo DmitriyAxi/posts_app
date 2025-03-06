@@ -1,0 +1,11 @@
+.analyticsSection{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.analyticsContainer {
+    width: 600px;
+    border: 1px black solid;
+    border-radius: 20px;
+}
