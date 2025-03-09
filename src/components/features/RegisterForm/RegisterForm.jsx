@@ -1,11 +1,11 @@
 import './RegisterForm.css'
-import Modal from '../Modal/Modal'
-import Button from '../Button/Button'
+import Modal from '../../shared/Modal/Modal'
+import Button from '../../shared/Button/Button'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'; 
+import ROUTES from '../../../constants/routes'
 
 export default function RegisterForm() {
-    const navigate = useNavigate()
     const [isOpenModal, setIsOpenModal] = useState(false)
     const [registerForm, setRegisterForm] = useState({
         name: '',
@@ -14,11 +14,7 @@ export default function RegisterForm() {
     })
     const [formErrors, setFormErrors] = useState({})
 
-    const handleChange = (e) => {
-        const { id, value } = e.target
-        setRegisterForm((prev) => ({ ...prev, [id]: value }));        
-        setFormErrors((prev) => ({ ...prev, [id]: '' }))
-    }
+    const navigate = useNavigate()
 
     const validateForm = () => {
         const errors = {};
@@ -40,13 +36,19 @@ export default function RegisterForm() {
         return Object.keys(errors).length === 0; 
     };
 
+    const handleChange = (e) => {
+        const { id, value } = e.target
+        setRegisterForm((prev) => ({ ...prev, [id]: value }));        
+        setFormErrors((prev) => ({ ...prev, [id]: '' }))
+    }
+
     const handleContinue = (e) => {
         e.preventDefault()
         if (validateForm()) {
             const userInfoJson = JSON.stringify(registerForm);
             localStorage.setItem('user', userInfoJson);
             setIsOpenModal(false);
-            navigate('/main');
+            navigate(ROUTES.main);
         }
     }
 
@@ -99,12 +101,12 @@ export default function RegisterForm() {
                         {formErrors['email'] && <p className='errorContainer'>{formErrors['email']}</p>}
                     </div>
                     <div className='registerButtons'>
-                    <Button text='Закрыть' handleClick={() => setIsOpenModal(false)} color='#dff4fe'></Button>
-                    <Button text='Продолжить' handleClick={handleContinue} color='#e3fedf'></Button>
+                    <Button text='Закрыть' handleClick={() => setIsOpenModal(false)} color='#dff4fe'/>
+                    <Button text='Продолжить' handleClick={handleContinue} color='#e3fedf'/>
                     </div>
                 </form> 
             </Modal>
-            <Button text='Регистрация' handleClick={() => setIsOpenModal(true)}></Button>
+            <Button text='Регистрация' handleClick={() => setIsOpenModal(true)}/>
         </>
     )          
 }

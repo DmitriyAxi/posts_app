@@ -1,34 +1,59 @@
 import { Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+// import { useEffect } from 'react';
+import { Navigate } from 'react-router-dom'; 
 import './App.css'
-import RegisterForm from './components/RegisterForm/RegisterForm'
-import Main from './components/Main/Main'
-import Header from './components/Header/Header'
-import PostInfo from './components/PostInfo/PostInfo';
-import Footer from './components/Footer/Footer';
-import Analytics from './components/Analytics/Analytics';
+import RegisterForm from './components/features/RegisterForm/RegisterForm'
+import Main from './pages/Main/Main'
+import Header from './components/shared/Header/Header'
+import PostInfo from './pages/PostInfo/PostInfo';
+import Footer from './components/shared/Footer/Footer';
+import Analytics from './pages/Analytics/Analytics';
+import ROUTES from './constants/routes.js'
+
+const ProtectedRoute = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  if (!user) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
+
+  return children;
+};
 
 function App() {
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'))
-    user && navigate('/main')
-  }, [])
-
   return (
     <>
-      <Header></Header>
+      <Header/>
       <main>
         <Routes>
-          <Route path="/" element={<RegisterForm />}/>
-          <Route path="/main" element={<Main/>}/>     
-          <Route path="/post/:postId" element={<PostInfo/>}/> 
-          <Route path="/analytics" element={<Analytics/>}/> 
+          <Route path={ROUTES.home} element={<RegisterForm />}/>
+          <Route 
+            path={ROUTES.main} 
+            element={
+              <ProtectedRoute>
+                <Main/>
+              </ProtectedRoute>
+            }
+          />     
+          <Route 
+            path={ROUTES.postInfo} 
+            element={
+              <ProtectedRoute>
+                <PostInfo/>
+              </ProtectedRoute>
+            }
+          /> 
+          <Route 
+            path={ROUTES.analytics} 
+            element={
+              <ProtectedRoute>
+                <Analytics/>
+              </ProtectedRoute>
+            }
+          /> 
         </Routes>
       </main>
-      <Footer></Footer>
+      <Footer/>
     </>
   )
 }

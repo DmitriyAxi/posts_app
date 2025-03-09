@@ -1,30 +1,15 @@
 import { useState, useEffect } from 'react'
-import FilterPosts from '../FilterPosts/FilterPosts'
-import Loader from '../Loader/Loader'
-import PostCard from '../PostCard/PostCard'
+import FilterPosts from '../../components/features/FilterPosts/FilterPosts'
+import Loader from '../../components/shared/Loader/Loader'
+import PostCard from '../../components/features/PostCard/PostCard'
 import './Posts.css'
+import { API_URL_DUMMY } from '../../constants/api'
 
 export default function Posts() {
     const [posts, setPosts] = useState([]) 
     const [isLoading, setIsLoading] = useState(false)
     const [activeTag, setActiveTag] = useState(null)
     const [errorPosts, setErrorPosts] = useState("")
-
-    useEffect(() => { 
-        const fetchPosts = async () => {
-            setIsLoading(true)
-            try {
-                const response = await fetch('https://dummyjson.com/posts')
-                const data = await response.json()
-                setPosts(data.posts)
-            } catch (error) {
-                setErrorPosts('Ошибка при получении информации о посте.')
-            }
-            finally { setIsLoading(false) }
-        }
-
-        fetchPosts();
-    }, [])
 
     const uniqueTags = 
         posts.filter(post => post && Array.isArray(post.tags)).map((post => post.tags)).reduce((uniqueTags, postTags) => {
@@ -33,6 +18,13 @@ export default function Posts() {
             }
             return uniqueTags
         }, [])
+
+    const filteredPosts = 
+        activeTag
+        ? posts.filter(post => post.tags.includes(activeTag))
+        : posts;
+
+    const tagsWithAll = ['All', ...uniqueTags];
 
     const handleChooseTag = (tag) => {
         if (tag === 'All') {
@@ -44,12 +36,21 @@ export default function Posts() {
         }
     }
 
-    const filteredPosts = 
-        activeTag
-        ? posts.filter(post => post.tags.includes(activeTag))
-        : posts;
+    useEffect(() => { 
+        const fetchPosts = async () => {
+            setIsLoading(true)
+            try {
+                const response = await fetch(`${API_URL_DUMMY}/posts`)
+                const data = await response.json()
+                setPosts(data.posts)
+            } catch (error) {
+                setErrorPosts('Ошибка при получении информации о посте.')
+            }
+            finally { setIsLoading(false) }
+        }
 
-    const tagsWithAll = ['All', ...uniqueTags];
+        fetchPosts();
+    }, [])
     return (
         <>  
             <div className='filterContainer'>
@@ -61,15 +62,15 @@ export default function Posts() {
                         onTagClick={() => handleChooseTag(tag)}
                     />)}
             </div>
-            {errorPosts && <p style={{color: 'red'}}>Что-то пошло не так. {errorPosts}</p>}
+            {errorPosts && <p className='errorText'>Что-то пошло не так. {errorPosts}</p>}
             <div className='container'>
                 {filteredPosts.map(post => 
                 <PostCard 
                     key={post.id}
-                    post={post}>
-                </PostCard>)}
+                    post={post}/>
+                )}
             </div>
-            <Loader isActive={isLoading}></Loader>
+            <Loader isActive={isLoading}/>
         </>
     )          
 }

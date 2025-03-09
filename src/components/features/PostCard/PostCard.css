@@ -85,3 +85,11 @@
     text-decoration: underline;
     font-size: 21px;
 }
+
+.iconText {
+    margin-right: 5px;
+}
+
+.clickable {
+    cursor: pointer;
+}

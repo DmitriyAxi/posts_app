@@ -1,8 +1,9 @@
 import './Analytics.css'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Pie, Line, Bar } from 'react-chartjs-2';
 import { ArcElement, Chart,LineElement, BarElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend } from 'chart.js';
-import Loader from '../Loader/Loader'
+import Loader from '../../components/shared/Loader/Loader'
+import { API_URL_DUMMY } from '../../constants/api'
 
 Chart.register(ArcElement, LineElement, BarElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 
@@ -10,23 +11,7 @@ export default function Analytics() {
     const [posts, setPosts] = useState([])
     const [isLoading, setIsLoading] = useState(false)
 
-    useEffect(() => { 
-        const fetchPostsInfo = async () => {
-            setIsLoading(true)
-            try {
-                const response = await fetch('https://dummyjson.com/posts')
-                const data = await response.json()
-                setPosts(data.posts)
-            } catch (error) {
-                console.error('Ошибка получения постов.', error)
-            }
-            finally { setIsLoading(false) }
-        }
-
-        fetchPostsInfo();
-    }, [])
-
-    const postIds = posts.map(post => `${post.id}`);
+    const postIds = useMemo(() => posts.map(post => `${post.id}`), [posts]);
     const likesData = posts.map(post => post.reactions.likes);
     const lineLikesData = {
         labels: postIds,
@@ -83,6 +68,22 @@ export default function Analytics() {
           },
         ],
     };
+
+    useEffect(() => { 
+        const fetchPostsInfo = async () => {
+            setIsLoading(true)
+            try {
+                const response = await fetch(`${API_URL_DUMMY}/posts`)
+                const data = await response.json()
+                setPosts(data.posts)
+            } catch (error) {
+                console.error('Ошибка получения постов.', error)
+            }
+            finally { setIsLoading(false) }
+        }
+
+        fetchPostsInfo();
+    }, [])
 
     return (
         <>
