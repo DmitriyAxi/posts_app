@@ -8,14 +8,13 @@ import PostInfo from './pages/PostInfo/PostInfo';
 import Footer from './components/shared/Footer/Footer';
 import Analytics from './pages/Analytics/Analytics';
 import ROUTES from './constants/routes.js'
+import TestComponent from './components/features/TestComponent/TestComponent'
 
 const ProtectedRoute = ({ children }) => {
   const user = JSON.parse(localStorage.getItem('user'));
-
   if (!user) {
     return <Navigate to={ROUTES.home} replace />;
   }
-
   return children;
 };
 
@@ -25,6 +24,7 @@ function App() {
       <Header/>
       <main>
         <Routes>
+          <Route path='/test' element={<TestComponent />}/>
           <Route path={ROUTES.home} element={<RegisterForm />}/>
           <Route 
             path={ROUTES.main} 
@@ -50,6 +50,7 @@ function App() {
               </ProtectedRoute>
             }
           /> 
+          <Route path='/test' element={<RegisterForm />}/>
         </Routes>
       </main>
       <Footer/>
